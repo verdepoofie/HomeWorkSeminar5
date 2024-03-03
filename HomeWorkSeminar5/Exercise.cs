@@ -25,13 +25,11 @@ namespace HomeWorkSeminar5
         private void DisplayFile()
         {
             Console.WriteLine("Имеющиеся записи:\n");
-            string[] fileStructure = File.ReadAllLines(fileName);
-            foreach(string record in fileStructure)
+            string[] wholeFile = File.ReadAllLines(fileName);
+            foreach(string record in wholeFile)
             {
                 foreach(string recordElement in record.Split("#"))
-                {
                     Console.Write(recordElement + "\t");
-                }
                 Console.WriteLine();
             }
         }
@@ -39,22 +37,22 @@ namespace HomeWorkSeminar5
         {
             try
             {
-                List<string> file = File.ReadLines(fileName).ToList();
+                string[] file = File.ReadAllLines(fileName);
                 Record record = new Record();
-                if(file.Count > 0)
-                    record.ID = int.Parse(file[file.Count - 1].Split('#')[0]);
+                if(file.Length > 0)
+                    record.ID = int.Parse(file[file.Length - 1].Split('#')[0]) + 1;
                 else
                     record.ID = 0;
                 record.CreationDateTime = DateTime.Now;
                 Console.WriteLine("Введите Ф.И.О.");
                 record.FullName = (string)GetInput(nameof(record.FullName));
-                Console.WriteLine("Введите дату рождения");
+                Console.WriteLine("Введите дату рождения в формате день.месяц.год");
                 record.DateOfBirth = (DateTime)GetInput(nameof(record.DateOfBirth));
                 Console.WriteLine("Введите место рождения");
                 record.PlaceOfBirth = (string)GetInput(nameof(record.PlaceOfBirth));
-                Console.WriteLine("Введите рост");
+                Console.WriteLine("Введите рост в см");
                 record.Height = (int)GetInput(nameof(record.Height));
-                File.WriteAllText(fileName,
+                File.AppendAllText(fileName,
                     record.ID.ToString() + "#" +
                     record.CreationDateTime.ToString("G") + "#" +
                     record.FullName + "#" +
@@ -76,19 +74,19 @@ namespace HomeWorkSeminar5
                 switch (inputType)
                 {
                     case "FullName":
-                        if (input != null && input != "" && input.Split(' ').Length == 3)
+                        if (!string.IsNullOrEmpty(input) && input.Split(' ').Length == 3)
                             return input;
                         break;
                     case "Height":
-                        if (input != null && int.TryParse(input, out int height) && height > 0)
+                        if (!string.IsNullOrEmpty(input) && int.TryParse(input, out int height) && height > 0)
                             return height;
                         break;
                     case "DateOfBirth":
-                        if(input != null && DateTime.TryParse(input, out DateTime date) && date < DateTime.Today)
+                        if(!string.IsNullOrEmpty(input) && DateTime.TryParse(input, out DateTime date) && date < DateTime.Today)
                             return date;
                         break;
                     case "PlaceOfBirth":
-                        if (input != null && input != "")
+                        if (!string.IsNullOrEmpty(input))
                             return input;
                         break;
                     default:
